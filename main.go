@@ -164,14 +164,12 @@ func getAlmOfferingReceiver(date string) string {
 	}
 
 	var receiver string
-	doc.Find("#achievement_dofus").Each(func(i int, s *goquery.Selection) {
-		// build a regex for a string with the type "Quest: Offering for " and extract the next word until the end of the string
-		expr := regexp.MustCompile(`Quest: Offering for (\w+)`)
-		matches := expr.FindStringSubmatch(s.Text())
-		if len(matches) > 1 {
-			receiver = matches[1]
-		}
-	})
+
+	expr := regexp.MustCompile(`Quest: Offering for (\w+)`)
+	matches := expr.FindStringSubmatch(doc.Text())
+	if len(matches) > 1 {
+		receiver = matches[1]
+	}
 	return receiver
 }
 
