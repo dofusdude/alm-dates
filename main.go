@@ -153,7 +153,7 @@ func getAlmOfferingReceiver(date string) string {
 		log.Fatal(err)
 	}
 	defer res.Body.Close()
-	if res.StatusCode != 200 {
+	if res.StatusCode > 214 {
 		log.Fatalf("status code error: %d %s", res.StatusCode, res.Status)
 	}
 
@@ -163,7 +163,7 @@ func getAlmOfferingReceiver(date string) string {
 	}
 
 	var receiver string
-	doc.Find("#achievement_dofus .mid .more .more-infos p").First().Each(func(i int, s *goquery.Selection) {
+	doc.Find("#achievement_dofus > div.mid > div > div > p").First().Each(func(i int, s *goquery.Selection) {
 		receiver = s.Text()[20:] // delete "Quest: Offering for " from string
 	})
 	return receiver
