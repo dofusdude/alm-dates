@@ -164,7 +164,7 @@ func getAlmOfferingReceiver(date string) string {
 	}
 
 	var receiver string
-	doc.Find("#achievement_dofus .more-infos p").Each(func(i int, s *goquery.Selection) {
+	doc.Find("#achievement_dofus .mid p").Each(func(i int, s *goquery.Selection) {
 		// check that the string starts with "Quest: Offering for "
 		if strings.HasPrefix(s.Text(), "Quest: Offering for ") {
 			receiver = s.Text()[20:] // delete "Quest: Offering for " from string
