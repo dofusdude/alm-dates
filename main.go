@@ -154,7 +154,14 @@ func getAlmOfferingReceiver(date string) string {
 		log.Fatal(err)
 	}
 	defer res.Body.Close()
-	if res.StatusCode > 214 {
+
+	if res.StatusCode == 202 {
+		log.Info("date not yet available, waiting 5 seconds and trying again")
+		time.Sleep(5 * time.Second)
+		return getAlmOfferingReceiver(date)
+	}
+
+	if res.StatusCode != 200 {
 		log.Fatalf("status code error: %d %s", res.StatusCode, res.Status)
 	}
 
@@ -164,7 +171,6 @@ func getAlmOfferingReceiver(date string) string {
 	}
 
 	var receiver string
-
 	expr := regexp.MustCompile(`Quest: Offering for (\w+)`)
 	matches := expr.FindStringSubmatch(doc.Text())
 	if len(matches) > 1 {
