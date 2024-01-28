@@ -163,8 +163,8 @@ func getAlmOfferingReceiver(date string) string {
 	}
 
 	var receiver string
-	doc.Find("#almanax_boss_desc span").Each(func(i int, s *goquery.Selection) {
-		receiver = s.Text()
+	doc.Find("#achievement_dofus .mid .more .more-infos p").First().Each(func(i int, s *goquery.Selection) {
+		receiver = s.Text()[20:] // delete "Quest: Offering for " from string
 	})
 	return receiver
 }
