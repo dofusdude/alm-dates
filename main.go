@@ -156,8 +156,8 @@ func getAlmOfferingReceiver(date string) string {
 	defer res.Body.Close()
 
 	if res.StatusCode == 202 {
-		log.Info("date not yet available, waiting 5 seconds and trying again")
-		time.Sleep(5 * time.Second)
+		log.Info("date not yet available, waiting and trying again")
+		time.Sleep(1 * time.Minute)
 		return getAlmOfferingReceiver(date)
 	}
 
