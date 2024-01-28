@@ -8,6 +8,7 @@ import (
 	"math/rand"
 	"net/http"
 	"os"
+	"strings"
 	"time"
 
 	"github.com/PuerkitoBio/goquery"
@@ -163,8 +164,11 @@ func getAlmOfferingReceiver(date string) string {
 	}
 
 	var receiver string
-	doc.Find("#achievement_dofus > div.mid > div > div > p").First().Each(func(i int, s *goquery.Selection) {
-		receiver = s.Text()[20:] // delete "Quest: Offering for " from string
+	doc.Find("#achievement_dofus > div.mid > div > div > p").Each(func(i int, s *goquery.Selection) {
+		// check that the string starts with "Quest: Offering for "
+		if strings.HasPrefix(s.Text(), "Quest: Offering for ") {
+			receiver = s.Text()[20:] // delete "Quest: Offering for " from string
+		}
 	})
 	return receiver
 }
