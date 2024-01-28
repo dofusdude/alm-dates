@@ -247,6 +247,7 @@ func addUpdateApi(almData mapping.MappedMultilangNPCAlmanax, date string, authKe
 	}
 
 	lanugages := []string{"de", "fr", "es", "it"}
+	translateEndpointUrl := createUpdateEndpointUrl + "/translate"
 	for _, language := range lanugages {
 		almApiDataInit.Language = language
 		almApiDataInit.ItemName = almData.Offering.ItemName[language]
@@ -256,7 +257,7 @@ func addUpdateApi(almData mapping.MappedMultilangNPCAlmanax, date string, authKe
 		if err != nil {
 			log.Fatal(err)
 		}
-		req, err := http.NewRequest("PUT", createUpdateEndpointUrl, bytes.NewBuffer(almApiData))
+		req, err := http.NewRequest("PUT", translateEndpointUrl, bytes.NewBuffer(almApiData))
 		if err != nil {
 			log.Fatal(err)
 		}
