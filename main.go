@@ -40,8 +40,16 @@ func isDate(date string) bool {
 	return true
 }
 
+const (
+	AlmanaxUrl              = "https://www.krosmoz.com/en/almanax"
+	CreateUpdateEndpointUrl = "https://alm.dofusdu.de/dofus2/almanax"
+	AlmanaxSourceRepo       = "dofusdude/dofus2-main"
+	UserAgent               = "Mozilla/5.0 (Windows NT 6.1; rv:2.0b7) Gecko/20100101 Firefox/4.0b7"
+)
+
 func loadNoDateData() []mapping.MappedMultilangNPCAlmanax {
-	req, err := http.NewRequest("GET", "https://api.github.com/repos/dofusdude/dofus2-main/releases/latest", nil)
+	latestDataGhApiUrl := fmt.Sprintf("https://api.github.com/repos/%s/releases/latest", AlmanaxSourceRepo)
+	req, err := http.NewRequest("GET", latestDataGhApiUrl, nil)
 	if err != nil {
 		fmt.Println("error creating request: ", err)
 		os.Exit(1)
@@ -60,7 +68,7 @@ func loadNoDateData() []mapping.MappedMultilangNPCAlmanax {
 	}
 
 	dofusVersion := data["tag_name"].(string)
-	mappedUrl := fmt.Sprintf("https://github.com/dofusdude/dofus2-main/releases/download/%s/MAPPED_ALMANAX.json", dofusVersion)
+	mappedUrl := fmt.Sprintf("https://github.com/%s/releases/download/%s/MAPPED_ALMANAX.json", AlmanaxSourceRepo, dofusVersion)
 	req, err = http.NewRequest("GET", mappedUrl, nil)
 	if err != nil {
 		log.Fatal("error creating request: ", err)
@@ -143,12 +151,12 @@ func saveFileLastTime(almDataWithDate map[string]mapping.MappedMultilangNPCAlman
 }
 
 func getAlmOfferingReceiver(date string) string {
-	almUrl := fmt.Sprintf("https://www.krosmoz.com/en/almanax/%s?game=dofus", date)
+	almUrl := fmt.Sprintf("%s/%s?game=dofus", AlmanaxUrl, date)
 	req, err := http.NewRequest("GET", almUrl, nil)
 	if err != nil {
 		log.Fatal(err)
 	}
-	req.Header.Set("User-Agent", "Mozilla/5.0 (Windows NT 6.1; rv:2.0b7) Gecko/20100101 Firefox/4.0b7")
+	req.Header.Set("User-Agent", UserAgent)
 	res, err := http.DefaultClient.Do(req)
 	if err != nil {
 		log.Fatal(err)
@@ -187,6 +195,7 @@ type AlmApiData struct {
 	BonusType      string `json:"bonus"`
 	Language       string `json:"language"`
 	ItemPictureUrl string `json:"item_picture_url"`
+	RewardKamas    int    `json:"reward_kamas"`
 }
 
 func addUpdateApi(almData mapping.MappedMultilangNPCAlmanax, date string, authKey string) {
@@ -199,15 +208,14 @@ func addUpdateApi(almData mapping.MappedMultilangNPCAlmanax, date string, authKe
 		BonusType:      almData.BonusType[initLang],
 		Language:       initLang,
 		ItemPictureUrl: almData.Offering.ImageUrls.Icon,
+		RewardKamas:    almData.RewardKamas,
 	}
-
-	createUpdateEndpointUrl := "https://alm.dofusdu.de/dofus2/almanax"
 
 	almApiData, err := json.Marshal(almApiDataInit)
 	if err != nil {
 		log.Fatal(err)
 	}
-	req, err := http.NewRequest("POST", createUpdateEndpointUrl, bytes.NewBuffer(almApiData))
+	req, err := http.NewRequest("POST", CreateUpdateEndpointUrl, bytes.NewBuffer(almApiData))
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -229,7 +237,7 @@ func addUpdateApi(almData mapping.MappedMultilangNPCAlmanax, date string, authKe
 	}
 
 	if res.StatusCode == 406 { // exists, so put to same endpoint
-		req, err := http.NewRequest("PUT", createUpdateEndpointUrl, bytes.NewBuffer(almApiData))
+		req, err := http.NewRequest("PUT", CreateUpdateEndpointUrl, bytes.NewBuffer(almApiData))
 		if err != nil {
 			log.Fatal(err)
 		}
@@ -247,7 +255,7 @@ func addUpdateApi(almData mapping.MappedMultilangNPCAlmanax, date string, authKe
 	}
 
 	lanugages := []string{"de", "fr", "es", "it"}
-	translateEndpointUrl := createUpdateEndpointUrl + "/translate"
+	translateEndpointUrl := CreateUpdateEndpointUrl + "/translate"
 	for _, language := range lanugages {
 		almApiDataInit.Language = language
 		almApiDataInit.ItemName = almData.Offering.ItemName[language]
