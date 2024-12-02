@@ -43,7 +43,7 @@ func isDate(date string) bool {
 const (
 	AlmanaxUrl              = "https://www.krosmoz.com/en/almanax"
 	CreateUpdateEndpointUrl = "https://alm.dofusdu.de/dofus2/almanax"
-	AlmanaxSourceRepo       = "dofusdude/dofus2-main"
+	AlmanaxSourceRepo       = "dofusdude/dofus3-main"
 	UserAgent               = "Mozilla/5.0 (Windows NT 6.1; rv:2.0b7) Gecko/20100101 Firefox/4.0b7"
 )
 
@@ -254,7 +254,7 @@ func addUpdateApi(almData mapping.MappedMultilangNPCAlmanax, date string, authKe
 		}
 	}
 
-	lanugages := []string{"de", "fr", "es", "it"}
+	lanugages := []string{"de", "fr", "es"}
 	translateEndpointUrl := CreateUpdateEndpointUrl + "/translate"
 	for _, language := range lanugages {
 		almApiDataInit.Language = language
