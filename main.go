@@ -455,60 +455,62 @@ func main() {
 			return
 		case version := <-update:
 
-			// signal that we are ready for the next update to start
 			readyForUpdate <- false
-			defer func() {
-				readyForUpdate <- true
-				log.Info("ready for next update")
-			}()
-
 			log.Info("update detected", "version", version)
 
-			almData, err := loadAlmanaxData(version)
-			if err != nil {
-				log.Fatal("error loading almanax data: ", "error", err)
-			}
+			func() {
+				defer func() {
+					readyForUpdate <- true
+					log.Info("ready for next update")
+				}()
 
-			// map the data
-			today := time.Now()
-			inYear := today.Add(endDuration)
-			fromDate := today.Format("2006-01-02")
-			toDate := inYear.Format("2006-01-02")
+				almData, err := loadAlmanaxData(version)
+				if err != nil {
+					log.Fatal("error loading almanax data: ", "error", err)
+				}
 
-			dateRange := createDateRange(fromDate, toDate)
+				// map the data
+				today := time.Now()
+				inYear := today.Add(endDuration)
+				fromDate := today.Format("2006-01-02")
+				toDate := inYear.Format("2006-01-02")
 
-			if len(almData[0].Days) != 0 && almData[0].Days[0] != "" {
-				log.Info("data already mapped, skipping", "version", version)
-				continue
-			}
+				dateRange := createDateRange(fromDate, toDate)
 
-			log.Info("Mapping...")
-			start := time.Now()
+				if len(almData[0].Days) != 0 && almData[0].Days[0] != "" {
+					log.Info("data already mapped, skipping", "version", version)
+					return
+				}
 
-			for _, date := range dateRange {
-				offeringReceiverKrozmoz := getAlmOfferingReceiver(date)
+				log.Info("Mapping...")
+				start := time.Now()
 
-				found := false
-				for i, almDataLocal := range almData {
-					if almDataLocal.OfferingReceiver == offeringReceiverKrozmoz {
-						found = true
-						almData[i].Days = append(almData[i].Days, date)
-						break
+				for _, date := range dateRange {
+					offeringReceiverKrozmoz := getAlmOfferingReceiver(date)
+
+					found := false
+					for i, almDataLocal := range almData {
+						if almDataLocal.OfferingReceiver == offeringReceiverKrozmoz {
+							found = true
+							almData[i].Days = append(almData[i].Days, date)
+							break
+						}
 					}
+					if !found {
+						log.Fatal("could not find offering receiver: ", offeringReceiverKrozmoz)
+					}
+
+					time.Sleep(time.Duration(rand.Intn(2)+1) * time.Second)
 				}
-				if !found {
-					log.Fatal("could not find offering receiver: ", offeringReceiverKrozmoz)
+
+				log.Info("Mapping done", "duration", time.Since(start))
+
+				err = updateAlmanaxRelease(almData, version, ghAuthKey)
+				if err != nil {
+					log.Fatal("error updating almanax release: ", err)
 				}
+			}()
 
-				time.Sleep(time.Duration(rand.Intn(2)+1) * time.Second)
-			}
-
-			log.Info("Mapping done", "duration", time.Since(start))
-
-			err = updateAlmanaxRelease(almData, version, ghAuthKey)
-			if err != nil {
-				log.Fatal("error updating almanax release: ", err)
-			}
 		}
 	}
 }
