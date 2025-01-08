@@ -101,7 +101,7 @@ func ParseDuration(s string) (time.Duration, error) {
 	return sumDur, nil
 }
 
-func loadAlmanaxData(version string) ([]mapping.MappedMultilangNPCAlmanax, error) {
+func loadAlmanaxData(version string) ([]mapping.MappedMultilangNPCAlmanaxUnity, error) {
 	client := github.NewClient(nil)
 
 	repRel, _, err := client.Repositories.GetReleaseByTag(context.Background(), DataRepoOwner, DataRepoName, version)
@@ -141,7 +141,7 @@ func loadAlmanaxData(version string) ([]mapping.MappedMultilangNPCAlmanax, error
 
 	defer asset.Close()
 
-	var almData []mapping.MappedMultilangNPCAlmanax
+	var almData []mapping.MappedMultilangNPCAlmanaxUnity
 	dec := json.NewDecoder(asset)
 	err = dec.Decode(&almData)
 	if err != nil {
@@ -151,7 +151,7 @@ func loadAlmanaxData(version string) ([]mapping.MappedMultilangNPCAlmanax, error
 	return almData, nil
 }
 
-func updateAlmanaxRelease(almData []mapping.MappedMultilangNPCAlmanax, version string, ghToken string) error {
+func updateAlmanaxRelease(almData []mapping.MappedMultilangNPCAlmanaxUnity, version string, ghToken string) error {
 	client := github.NewClient(nil).WithAuthToken(ghToken)
 
 	repRel, _, err := client.Repositories.GetReleaseByTag(context.Background(), DataRepoOwner, DataRepoName, version)
