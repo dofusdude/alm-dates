@@ -8,7 +8,7 @@ require (
 	github.com/PuerkitoBio/goquery v1.10.1
 	github.com/charmbracelet/log v0.4.0
 	github.com/dofusdude/dodugo v1.0.0-rc.8
-	github.com/dofusdude/dodumap v0.6.0
+	github.com/dofusdude/dodumap v0.6.1
 	github.com/google/go-github/v67 v67.0.0
 	golang.org/x/exp v0.0.0-20250106191152-7588d65b2ba8
 )

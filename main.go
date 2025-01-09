@@ -45,14 +45,15 @@ func isDate(date string) bool {
 }
 
 const (
-	AlmanaxUrl              = "https://www.krosmoz.com/en/almanax"
-	CreateUpdateEndpointUrl = "https://alm.dofusdu.de/dofus2/almanax"
-	AlmanaxSourceRepo       = "dofusdude/dofus3-main"
-	UserAgent               = "Mozilla/5.0 (Windows NT 6.1; rv:2.0b7) Gecko/20100101 Firefox/4.0b7"
-	DataRepoOwner           = "dofusdude"
-	DataRepoName            = "dofus3-main"
-	MappedAlmanaxFileName   = "MAPPED_ALMANAX.json"
+	AlmanaxUrl               = "https://www.krosmoz.com/en/almanax"
+	DoduapiUpdateEndpointUrl = "https://api.dofusdu.de/dofus3/v1/update"
+	UserAgent                = "Mozilla/5.0 (Windows NT 6.1; rv:2.0b7) Gecko/20100101 Firefox/4.0b7"
+	DataRepoOwner            = "dofusdude"
+	DataRepoName             = "dofus3-main"
+	MappedAlmanaxFileName    = "MAPPED_ALMANAX.json"
 )
+
+var DoduapiUpdateToken string
 
 // ParseDuration parses a duration string.
 // examples: "10d", "-1.5w" or "3Y4M5d".
@@ -207,6 +208,19 @@ func updateAlmanaxRelease(almData []mapping.MappedMultilangNPCAlmanaxUnity, vers
 	}, assetFile)
 	if err != nil {
 		return err
+	}
+
+	if DoduapiUpdateToken != "" {
+		body := fmt.Sprintf(`{"version":"%s"}`, version)
+		req, err := http.NewRequest("POST", fmt.Sprintf("%s/%s", DoduapiUpdateEndpointUrl, DoduapiUpdateToken), strings.NewReader(body))
+		if err != nil {
+			return err
+		}
+		req.Header.Set("Content-Type", "application/json")
+		_, err = http.DefaultClient.Do(req)
+		if err != nil {
+			return err
+		}
 	}
 
 	return err
@@ -423,6 +437,8 @@ func main() {
 	if ghAuthKey == "" {
 		log.Fatal("no github auth key found")
 	}
+
+	DoduapiUpdateToken = os.Getenv("DODUAPI_UPDATE_TOKEN")
 
 	pollIntervalStr := os.Getenv("POLLING_INTERVAL")
 	if pollIntervalStr == "" {

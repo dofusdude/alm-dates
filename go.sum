@@ -14,8 +14,8 @@ github.com/davecgh/go-spew v1.1.1 h1:vj9j/u1bqnvCEfJOwUhtlOARqs3+rkHYY13jYWTU97c
 github.com/davecgh/go-spew v1.1.1/go.mod h1:J7Y8YcW2NihsgmVo/mv3lAwl/skON4iLHjSsI+c5H38=
 github.com/dofusdude/dodugo v1.0.0-rc.8 h1:C3LCiBag8BaFzMEJ7xnwur0aXAVGMwPH78T3eqt88TQ=
 github.com/dofusdude/dodugo v1.0.0-rc.8/go.mod h1:R/MZWCsB/+GpFctfckhOWmqpCMgmGkB+YC3N3TS3n6Y=
-github.com/dofusdude/dodumap v0.6.0 h1:MUhyT5DEsuJnb1UDkgI1SuqKqIB3I3b0oNkjY/a8dBU=
-github.com/dofusdude/dodumap v0.6.0/go.mod h1:51KG2eMd02UJnXErOubAukVftYuJproDHqJcbIHSzIE=
+github.com/dofusdude/dodumap v0.6.1 h1:8zaTv6pMfkvN8OY3g2wupcjF3NgQo/KaOFI0gH++ljY=
+github.com/dofusdude/dodumap v0.6.1/go.mod h1:51KG2eMd02UJnXErOubAukVftYuJproDHqJcbIHSzIE=
 github.com/emirpasic/gods v1.18.1 h1:FXtiHYKDGKCW2KzwZKx0iC0PQmdlorYgdFG9jPXJ1Bc=
 github.com/emirpasic/gods v1.18.1/go.mod h1:8tpGGwCnJ5H4r6BWwaV6OrWmMoPhUl5jm/FMNAnJvWQ=
 github.com/go-logfmt/logfmt v0.6.0 h1:wGYYu3uicYdqXVgoYbvnkrPVXkuLM1p1ifugDMEdRi4=
