@@ -14,7 +14,6 @@ import (
 
 	"github.com/PuerkitoBio/goquery"
 	"github.com/charmbracelet/log"
-	"github.com/dofusdude/dodugo"
 	mapping "github.com/dofusdude/dodumap"
 	"github.com/google/go-github/v67/github"
 	"golang.org/x/exp/rand"
@@ -334,21 +333,6 @@ func saveLocalVersion(version string, workdir string) error {
 }
 
 func updateChan(ctx context.Context, interval time.Duration, update chan string, workdir string, readyForUpdate chan bool) {
-	serverUrl := "https://api.dofusdu.de"
-	game := "dofus3"
-	cfg := &dodugo.Configuration{
-		DefaultHeader: make(map[string]string),
-		UserAgent:     "dofusdude/alm-dates",
-		Debug:         false,
-		Servers: dodugo.ServerConfigurations{
-			{
-				URL:         serverUrl,
-				Description: "API",
-			},
-		},
-		OperationServers: map[string]dodugo.ServerConfigurations{},
-	}
-
 	timer := time.NewTicker(interval)
 
 	isReady := true
@@ -364,33 +348,28 @@ func updateChan(ctx context.Context, interval time.Duration, update chan string,
 				continue
 			}
 
-			var dodugoClient = dodugo.NewAPIClient(cfg)
-
-			version, http, err := dodugoClient.MetaAPI.GetMetaVersion(ctx, game).Execute()
+			ghclient := github.NewClient(nil)
+			repRel, _, err := ghclient.Repositories.GetLatestRelease(context.Background(), DataRepoOwner, DataRepoName)
 			if err != nil {
-				log.Fatal("error getting meta version: ", err)
+				log.Fatal("error getting latest gh release: ", err)
 				return
 			}
 
-			if http != nil && http.StatusCode != 200 {
-				log.Fatal("error getting meta version", "status", http.Status)
-				return
-			}
+			currentVersion := repRel.GetTagName()
 
-			currentApiVersion := version.GetVersion()
 			localVersion, err := loadLocalVersion(workdir)
 			if err != nil {
 				log.Fatal("error loading local version: ", err)
 				return
 			}
 
-			if currentApiVersion != localVersion {
-				err = saveLocalVersion(*version.Version, workdir)
+			if currentVersion != localVersion {
+				err = saveLocalVersion(currentVersion, workdir)
 				if err != nil {
 					log.Fatal("error saving local version: ", err)
 					return
 				}
-				update <- currentApiVersion
+				update <- currentVersion
 			}
 		}
 	}
@@ -442,7 +421,7 @@ func main() {
 
 	pollIntervalStr := os.Getenv("POLLING_INTERVAL")
 	if pollIntervalStr == "" {
-		pollIntervalStr = "1m"
+		pollIntervalStr = "5m"
 	}
 
 	endDurationStr := os.Getenv("END_DURATION")

@@ -7,7 +7,6 @@ toolchain go1.23.0
 require (
 	github.com/PuerkitoBio/goquery v1.10.1
 	github.com/charmbracelet/log v0.4.0
-	github.com/dofusdude/dodugo v1.0.0-rc.8
 	github.com/dofusdude/dodumap v0.6.3
 	github.com/google/go-github/v67 v67.0.0
 	golang.org/x/exp v0.0.0-20250106191152-7588d65b2ba8
@@ -26,7 +25,7 @@ require (
 	github.com/mattn/go-runewidth v0.0.16 // indirect
 	github.com/muesli/termenv v0.15.2 // indirect
 	github.com/rivo/uniseg v0.4.7 // indirect
+	github.com/stretchr/testify v1.10.0 // indirect
 	golang.org/x/net v0.34.0 // indirect
 	golang.org/x/sys v0.29.0 // indirect
-	gopkg.in/validator.v2 v2.0.1 // indirect
 )
